@@ -10,7 +10,7 @@ from USB_Quartermaster_common import AbstractCommunicator, AbstractRemoteHostDri
 from USB_Quartermaster_common import AbstractLocalDriver
 
 
-@lru_cache
+@lru_cache()
 def find_all_plugins() -> Dict[str, ModuleType]:
     discovered_plugins = {
         name: importlib.import_module(name)
@@ -47,20 +47,20 @@ def is_shareable_device_driver(thing) -> bool:
 def is_local_driver(thing) -> bool:
     return class_tester(thing, AbstractLocalDriver)
 
-@lru_cache
+@lru_cache()
 def communicator_classes() -> List[Type[AbstractCommunicator]]:
     return get_plugin_classes(is_communicator)
 
 
-@lru_cache
+@lru_cache()
 def remote_host_classes() -> List[Type[AbstractRemoteHostDriver]]:
     return get_plugin_classes(is_remote_host_driver)
 
 
-@lru_cache
+@lru_cache()
 def shareable_device_classes() -> List[Type[AbstractShareableDeviceDriver]]:
     return get_plugin_classes(is_shareable_device_driver)
 
-@lru_cache
+@lru_cache()
 def local_driver_classes() -> List[Type[AbstractLocalDriver]]:
     return get_plugin_classes(is_local_driver)

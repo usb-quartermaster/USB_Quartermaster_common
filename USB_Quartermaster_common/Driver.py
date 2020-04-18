@@ -1,4 +1,5 @@
 import logging
+import platform
 from typing import TYPE_CHECKING, List, Dict, Type, Iterable, Any, Tuple, NoReturn, Optional, Union
 
 from .Communicator import AbstractCommunicator
@@ -91,11 +92,11 @@ class AbstractShareableDeviceDriver(object):
 
     # Override this in subclasses or replace validate_configuration()
     CONFIGURATION_KEYS: List[str] = None
-    
+
     HOST_CLASS: Type['AbstractRemoteHostDriver']
 
     IDENTIFIER: str
-    
+
     host_driver: 'AbstractRemoteHostDriver' = None
 
     class DeviceError(Exception):
@@ -192,8 +193,9 @@ class AbstractLocalDriver(object):
     This is the interfaced used to attach, manage, and detach devices form the client computer. It adds support for a
     USB sharing technology to the quartermaster_client command.
     """
-    
+
     IDENTIFIER: str
+    PLATFORM = platform.system().lower()
 
     class DriverError(USB_Quartermaster_Exception):
         pass
@@ -213,16 +215,13 @@ class AbstractLocalDriver(object):
     class UnsupportedPlatform(DriverError):
         pass
 
-    async def async_init(self):
-        pass
-
-    async def connect(self):
+    def connect(self):
         raise NotImplementedError
 
-    async def disconnect(self):
+    def disconnect(self):
         raise NotImplementedError
 
-    async def connected(self) -> bool:
+    def connected(self) -> bool:
         raise NotImplementedError
 
     def preflight_check(self):

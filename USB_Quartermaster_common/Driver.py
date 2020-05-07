@@ -1,6 +1,6 @@
 import logging
 import platform
-from typing import TYPE_CHECKING, List, Dict, Type, Iterable, Any, Tuple, NoReturn, Optional, Union
+from typing import TYPE_CHECKING, List, Type, Iterable, Tuple, NoReturn, Optional, Union
 
 from .Communicator import AbstractCommunicator
 from .Exceptions import USB_Quartermaster_Exception
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class AbstractRemoteHostDriver(object):
     """
     This code runs on the quartermaster server
-    
+
     This is closely related to the AbstractShareableDeviceDriver. Where as that focuses on acting on a single device
     this class is aimed at managing groupings of devices on a single host. This allows for more efficient network
     interactions as some operations such as getting status, can be performed on many devices at once on a host.
@@ -64,15 +64,6 @@ class AbstractRemoteHostDriver(object):
 
     def get_device_driver(self, device: 'Device') -> 'AbstractShareableDeviceDriver':
         return self.DEVICE_CLASS(device=device, host=self)
-
-    def online_statuses(self) -> List[Dict['Device', Any]]:
-        raise NotImplemented
-
-    def update_statuses(self):
-        raise NotImplemented
-
-    def share_statuses(self) -> Dict[Any, Any]:
-        raise NotImplemented
 
     def update_device_states(self, devices: Iterable['Device']) -> NoReturn:
         raise NotImplemented
@@ -138,12 +129,12 @@ class AbstractShareableDeviceDriver(object):
         logger.info(f"{self} shared={state}")
         return state
 
-    def share(self, **kwargs) -> None:
+    def share(self, **kwargs) -> NoReturn:
         if not self.is_shared():
             logger.info(f"Sharing {self}")
             self.start_sharing(**kwargs)
 
-    def unshare(self) -> None:
+    def unshare(self) -> NoReturn:
         if self.is_shared():
             logger.info(f"Un-sharing {self.device}")
             self.stop_sharing()

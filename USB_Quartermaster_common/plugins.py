@@ -5,9 +5,10 @@ from functools import lru_cache
 from types import ModuleType
 from typing import Dict, Type, Any, Callable, List
 
-from USB_Quartermaster_common import AbstractCommunicator, AbstractRemoteHostDriver, AbstractShareableDeviceDriver
+from USB_Quartermaster_common import AbstractCommunicator, AbstractRemoteHostDriver, AbstractShareableDeviceDriver, \
+    AbstractLocalDriver
 
-from USB_Quartermaster_common import AbstractLocalDriver
+include_mocks = False
 
 
 @lru_cache()
@@ -22,7 +23,9 @@ def find_all_plugins() -> Dict[str, ModuleType]:
 
 
 def class_tester(thing: Any, parent_class: Type) -> bool:
-    return inspect.isclass(thing) and issubclass(thing, parent_class)
+    return inspect.isclass(thing) \
+           and issubclass(thing, parent_class) \
+           and thing is not parent_class
 
 
 def get_plugin_classes(matcher: Callable) -> List[Type[Any]]:
@@ -30,6 +33,13 @@ def get_plugin_classes(matcher: Callable) -> List[Type[Any]]:
     for plugin in find_all_plugins().values():
         found = dict(inspect.getmembers(plugin, matcher)).values()
         all_found.extend(found)
+
+    # Allow the addition of mock plugins to support testing
+    if include_mocks:
+        from . import example_mocks
+        found = dict(inspect.getmembers(example_mocks, matcher)).values()
+        all_found.extend(found)
+
     return all_found
 
 
@@ -44,8 +54,10 @@ def is_remote_host_driver(thing) -> bool:
 def is_shareable_device_driver(thing) -> bool:
     return class_tester(thing, AbstractShareableDeviceDriver)
 
+
 def is_local_driver(thing) -> bool:
     return class_tester(thing, AbstractLocalDriver)
+
 
 @lru_cache()
 def communicator_classes() -> List[Type[AbstractCommunicator]]:
@@ -60,6 +72,7 @@ def remote_host_classes() -> List[Type[AbstractRemoteHostDriver]]:
 @lru_cache()
 def shareable_device_classes() -> List[Type[AbstractShareableDeviceDriver]]:
     return get_plugin_classes(is_shareable_device_driver)
+
 
 @lru_cache()
 def local_driver_classes() -> List[Type[AbstractLocalDriver]]:

@@ -22,14 +22,14 @@ class AbstractCommunicator(object):
     CONFIGURATION_KEYS: List[str] = None
     SUPPORTED_HOST_TYPES: List[str] = None
     IDENTIFIER: str
-    
+
     def __init__(self, host: 'RemoteHost'):
         self.host = host
         # strict=False is there to allow use of \n in json values
         self.config = json.loads(host.config_json, strict=False)
 
     def execute_command(self, command: str) -> CommandResponse:
-        raise NotImplemented
+        return CommandResponse(return_code=0, stdout="Mock STDOUT", stderr="Mock STDERR")
 
     def is_host_reachable(self) -> bool:
-        raise NotImplemented
+        return True

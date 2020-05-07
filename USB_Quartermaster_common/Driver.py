@@ -139,20 +139,20 @@ class AbstractShareableDeviceDriver(object):
             logger.info(f"Un-sharing {self.device}")
             self.stop_sharing()
 
-    def refresh(self, **_) -> None:
+    def refresh(self, **_) -> NoReturn:
         """Renew shares if they have been lost for some reason"""
         self.start_sharing()
 
-    def start_sharing(self, **kwargs) -> None:
+    def start_sharing(self, **kwargs) -> NoReturn:
         raise NotImplemented
 
-    def stop_sharing(self) -> None:
+    def stop_sharing(self) -> NoReturn:
         raise NotImplemented
 
-    def get_share_state(self) -> bool:
+    def get_share_state(self) -> NoReturn:
         raise NotImplemented
 
-    def get_online_state(self) -> bool:
+    def get_online_state(self) -> NoReturn:
         raise NotImplementedError
 
     def validate_configuration(self) -> List[str]:
@@ -164,14 +164,6 @@ class AbstractShareableDeviceDriver(object):
             if key not in self.device.config:
                 errors_found.append(f"Value for '{key}' is needed")
         return errors_found
-
-    def password_string(self) -> Optional[str]:
-        """Return the password needed for accessing this device. If None no password is needed"""
-        raise NotImplemented
-
-    def check_password(self, password: bytes) -> bool:
-        """Returns true when "password" matches the expected value from the driver + resource"""
-        raise NotImplemented
 
     def __str__(self):
         return f"ShareableUsbDevice - {self.device}"
